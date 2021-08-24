@@ -1,6 +1,6 @@
 package com.exercise.vendingmachine.service.impl;
 
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.User;
 import com.exercise.vendingmachine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throws UsernameNotFoundException {
         User user = userRepository.findTopByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
-        return new VendingMachineUserDetailsDto(user);
+        return new UserDetailsDto(user);
     }
 
 }

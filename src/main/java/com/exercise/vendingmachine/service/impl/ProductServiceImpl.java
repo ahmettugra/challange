@@ -1,11 +1,12 @@
 package com.exercise.vendingmachine.service.impl;
 
 import com.exercise.vendingmachine.dto.ProductDto;
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.Product;
 import com.exercise.vendingmachine.repository.ProductRepository;
 import com.exercise.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -18,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product createProduct(VendingMachineUserDetailsDto userDetailsDto, ProductDto productDto) {
+    public Product createProduct(UserDetailsDto userDetailsDto, ProductDto productDto) {
         Product product = Product.builder()
                 .amountAvailable(productDto.getAmountAvailable())
                 .cost(productDto.getCost())
@@ -28,12 +29,18 @@ public class ProductServiceImpl implements ProductService {
         return this.productRepository.save(product);
     }
 
-    public Product getProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId) {
-        return this.productRepository.findByIdAndSellerId(productId, userDetailsDto.getUser().getId())
+    /*
+     * Get product can be called by both (all) seller or buyer accounts
+     */
+    @Override
+    public Product getProduct(Long productId) {
+        return this.productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
     }
 
-    public Product updateProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId, ProductDto productDto) {
+    @Override
+    @Transactional
+    public Product updateProduct(UserDetailsDto userDetailsDto, Long productId, ProductDto productDto) {
         Product product = this.productRepository.findByIdAndSellerId(productId, userDetailsDto.getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
         product.setAmountAvailable(productDto.getAmountAvailable());
@@ -42,7 +49,9 @@ public class ProductServiceImpl implements ProductService {
         return this.productRepository.save(product);
     }
 
-    public Product deleteProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId) {
+    @Override
+    @Transactional
+    public Product deleteProduct(UserDetailsDto userDetailsDto, Long productId) {
         Product product = this.productRepository.findByIdAndSellerId(productId, userDetailsDto.getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
         this.productRepository.delete(product);

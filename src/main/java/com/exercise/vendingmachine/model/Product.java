@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 
 @Entity
 @Table
@@ -21,8 +20,9 @@ public class Product {
 
     public Integer amountAvailable;
 
-    public BigInteger cost;
+    public Integer cost;
 
+    @Column(length = 64)
     public String productName;
 
     public Long sellerId;

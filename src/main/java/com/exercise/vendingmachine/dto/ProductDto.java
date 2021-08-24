@@ -1,21 +1,25 @@
 package com.exercise.vendingmachine.dto;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigInteger;
 
 @Data
 public class ProductDto {
 
     @NotNull
+    @Range(min=1, max=Integer.MAX_VALUE)
     public Integer amountAvailable;
 
     @NotNull
-    public BigInteger cost;
+    @Range(min = 1)
+    public Integer cost;
 
-    @Size(min = 2, max = 32)
+    @NotEmpty
+    @Size(min = 2, max = 64)
     public String productName;
 
 }

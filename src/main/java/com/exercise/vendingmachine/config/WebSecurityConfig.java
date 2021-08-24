@@ -41,10 +41,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
+                /*
+                 * H2 Console permitted
+                 */
                 .antMatchers("/h2/**").permitAll()
+
+                /*
+                 * UserController authorization configuration
+                 */
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
+
+                /*
+                 * ProductController authorization & authority configuration
+                 */
+                .antMatchers(HttpMethod.GET, "/products/**").hasAnyAuthority("SELLER", "BUYER")
+                .antMatchers("/products/**").hasAuthority("SELLER")
+
+                /*
+                 * VendingMachineController authorization & authority configuration
+                 */
                 .antMatchers(HttpMethod.POST, "/deposit").hasAuthority("BUYER")
+                .antMatchers(HttpMethod.POST, "/buy").hasAuthority("BUYER")
                 .antMatchers(HttpMethod.POST, "/reset").hasAuthority("BUYER")
+
+                /*
+                 * Common security configurations
+                 * Since it is an example application, basic auth is used for simplicity. (JWT or OAuth2 not implemented)
+                 */
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()

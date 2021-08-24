@@ -1,17 +1,17 @@
 package com.exercise.vendingmachine.service;
 
 import com.exercise.vendingmachine.dto.ProductDto;
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.Product;
 
 public interface ProductService {
 
-    Product createProduct(VendingMachineUserDetailsDto userDetailsDto, ProductDto productDto);
+    Product createProduct(UserDetailsDto userDetailsDto, ProductDto productDto);
 
-    Product getProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId);
+    Product getProduct(Long productId);
 
-    Product updateProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId, ProductDto productDto);
+    Product updateProduct(UserDetailsDto userDetailsDto, Long productId, ProductDto productDto);
 
-    Product deleteProduct(VendingMachineUserDetailsDto userDetailsDto, Long productId);
+    Product deleteProduct(UserDetailsDto userDetailsDto, Long productId);
 
 }

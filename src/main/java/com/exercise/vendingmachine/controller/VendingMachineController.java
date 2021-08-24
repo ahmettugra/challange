@@ -1,9 +1,11 @@
 package com.exercise.vendingmachine.controller;
 
+import com.exercise.vendingmachine.dto.BuyResponseDto;
 import com.exercise.vendingmachine.dto.DepositDto;
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.PurchaseDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.User;
-import com.exercise.vendingmachine.service.UserService;
+import com.exercise.vendingmachine.service.VendingMachineService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,30 +18,30 @@ import javax.validation.Valid;
         consumes=MediaType.APPLICATION_JSON_VALUE)
 public class VendingMachineController {
 
-    private final UserService userService;
+    private final VendingMachineService vendingMachineService;
 
-    public VendingMachineController(UserService userService) {
-        this.userService = userService;
+    public VendingMachineController(VendingMachineService vendingMachineService) {
+        this.vendingMachineService = vendingMachineService;
     }
 
     @PostMapping("/deposit")
     private @ResponseBody
-    User deposit(@AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto,
+    User deposit(@AuthenticationPrincipal UserDetailsDto userDetailsDto,
             @RequestBody @Valid DepositDto depositDto) {
-        return userService.deposit(userDetailsDto, depositDto);
+        return vendingMachineService.deposit(userDetailsDto, depositDto);
     }
 
     @PostMapping("/buy")
     private @ResponseBody
-    User buy(@AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto) {
-        // Not implemented yet
-        return null;
+    BuyResponseDto buy(@AuthenticationPrincipal UserDetailsDto userDetailsDto,
+                       @RequestBody @Valid PurchaseDto purchaseDto) {
+        return vendingMachineService.buy(userDetailsDto, purchaseDto);
     }
 
     @PostMapping("/reset")
     private @ResponseBody
-    User reset(@AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto) {
-        return userService.reset(userDetailsDto);
+    User reset(@AuthenticationPrincipal UserDetailsDto userDetailsDto) {
+        return vendingMachineService.reset(userDetailsDto);
     }
 
 }

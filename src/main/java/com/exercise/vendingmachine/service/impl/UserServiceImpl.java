@@ -1,8 +1,7 @@
 package com.exercise.vendingmachine.service.impl;
 
-import com.exercise.vendingmachine.dto.DepositDto;
 import com.exercise.vendingmachine.dto.UserDto;
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.User;
 import com.exercise.vendingmachine.repository.UserRepository;
 import com.exercise.vendingmachine.service.UserService;
@@ -25,63 +24,55 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
+    /*
+     * Create user can be called by anyone
+     */
     @Override
+    @Transactional
     public User createUser(UserDto userDto) {
         User user = User.builder()
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
-                .deposit(userDto.getDeposit())
+                .deposit(0L)
                 .role(userDto.getRole())
                 .build();
         return this.userRepository.save(user);
     }
 
     @Override
-    public User getUser(VendingMachineUserDetailsDto userDetailsDto, Long userId) {
+    public User getUser(UserDetailsDto userDetailsDto, Long userId) {
         checkUserPermission(userDetailsDto, userId);
-        return this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        return this.userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
     }
 
     @Override
-    public User updateUser(VendingMachineUserDetailsDto userDetailsDto, Long userId, UserDto userDto) {
+    @Transactional
+    public User updateUser(UserDetailsDto userDetailsDto, Long userId, UserDto userDto) {
         checkUserPermission(userDetailsDto, userId);
-        User user = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
         user.setUsername(userDto.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        user.setDeposit(userDto.getDeposit());
+        // user.setDeposit(userDto.getDeposit());
         user.setRole(userDto.getRole());
         return this.userRepository.save(user);
     }
 
     @Override
-    public User deleteUser(VendingMachineUserDetailsDto userDetailsDto, Long userId) {
+    @Transactional
+    public User deleteUser(UserDetailsDto userDetailsDto, Long userId) {
         checkUserPermission(userDetailsDto, userId);
-        User user = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
         this.userRepository.delete(user);
         return user;
-    }
-
-    @Transactional
-    public User deposit(VendingMachineUserDetailsDto userDetailsDto, DepositDto depositDto) {
-        User user = this.userRepository.findById(userDetailsDto.getUser().getId()).orElseThrow(EntityNotFoundException::new);
-        if (user.getDeposit() == null) {
-            user.setDeposit(0L);
-        }
-        user.setDeposit(user.getDeposit() + depositDto.getCoin().getCents());
-        return this.userRepository.save(user);
-    }
-
-    @Transactional
-    public User reset(VendingMachineUserDetailsDto userDetailsDto) {
-        User user = this.userRepository.findById(userDetailsDto.getUser().getId()).orElseThrow(EntityNotFoundException::new);
-        user.setDeposit(0L);
-        return this.userRepository.save(user);
     }
 
     /*
      * Strict security policy applied, users can only get or modify their own accounts
      */
-    private static void checkUserPermission(VendingMachineUserDetailsDto userDetailsDto, Long userId) {
+    private static void checkUserPermission(UserDetailsDto userDetailsDto, Long userId) {
         if (!userDetailsDto.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("Access denied");
         }

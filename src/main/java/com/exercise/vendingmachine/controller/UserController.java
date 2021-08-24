@@ -1,7 +1,7 @@
 package com.exercise.vendingmachine.controller;
 
 import com.exercise.vendingmachine.dto.UserDto;
-import com.exercise.vendingmachine.dto.VendingMachineUserDetailsDto;
+import com.exercise.vendingmachine.dto.UserDetailsDto;
 import com.exercise.vendingmachine.model.User;
 import com.exercise.vendingmachine.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
+     * Create user can be called by anyone
+     */
     @PostMapping
     private @ResponseBody
     User createUser(@RequestBody @Valid UserDto userDto) {
@@ -33,14 +36,14 @@ public class UserController {
 
     @GetMapping("/{userId}")
     private @ResponseBody
-    User getUser(@AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto, @PathVariable Long userId) {
+    User getUser(@AuthenticationPrincipal UserDetailsDto userDetailsDto, @PathVariable Long userId) {
         return userService.getUser(userDetailsDto, userId);
     }
 
     @PutMapping("/{userId}")
     private @ResponseBody
     User updateUser(
-            @AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto,
+            @AuthenticationPrincipal UserDetailsDto userDetailsDto,
             @PathVariable Long userId,
             @RequestBody @Valid UserDto userDto) {
         return userService.updateUser(userDetailsDto, userId, userDto);
@@ -48,7 +51,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     private @ResponseBody
-    User deleteUser(@AuthenticationPrincipal VendingMachineUserDetailsDto userDetailsDto, @PathVariable Long userId) {
+    User deleteUser(@AuthenticationPrincipal UserDetailsDto userDetailsDto, @PathVariable Long userId) {
         return userService.deleteUser(userDetailsDto, userId);
     }
 
